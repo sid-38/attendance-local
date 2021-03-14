@@ -41,12 +41,13 @@ def enroll():
     for item in fp:
         item_s=item*item
         esfp.append(public_key.encrypt(item_s))
-        b_vector=random_num_list_generate(n,1,random_limit)
-        print(b_vector)
-        diff_array.append(item-ran)
-    while(1):
-        tid=random.randint(100,300)
-        public_key.encrypt(tid)
+    print(esfp)
+    b_vector=random_num_list_generate(n,1,random_limit)
+    print(b_vector)
+        # diff_array.append(item-ran)
+    # while(1):
+    #     tid=random.randint(100,300)
+    #     public_key.encrypt(tid)
 
     return({'message':'success'},200)
 
