@@ -3,6 +3,7 @@ from phe import paillier
 import pickle
 import json
 import random
+
 app = Flask(__name__)
 private_key = None
 public_key = None
@@ -14,7 +15,7 @@ with open("private_key",'rb') as pvt_file, open("public_key",'rb') as pub_file:
     public_key = pickle.load(pub_file)
 
 def random_num_generate(n):
-    return random.sample(range(1,random_limit), 3)
+    return random.sample(range(1,random_limit), n)
 
 @app.route('/verify', methods=['POST'])
 def verify():
