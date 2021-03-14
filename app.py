@@ -29,5 +29,31 @@ def verify():
 
     return({'message':'success'},200)
 
+@app.route('/enroll',methods=['POST'])
+def enroll():
+    data = request.get_json();
+    if not 'id' in data or not 'fp' in data or len(data['fp']) != n:
+        return({'message':'error'},400)
+    fp = data['fp']
+    esfp = []
+    b_vector = []
+    diff_array = []
+    for item in fp:
+        item_s=item*item
+        esfp.append(public_key.encrypt(item_s))
+        while(1):
+            ran=random.randint(0,25)
+            if (item-ran) > 0:
+                break
+        diff_array.append(item-ran)
+        b_vector.append(ran)
+    #template id should be generated... which is unique to each user
+    while(1):
+        tid=random.randint(100,300)
+        #check if this already exists by going through all mysql entries
+        #if not continue
+        public_key.encrypt(tid)
+
+    return({'message':'success'},200)
 
 
