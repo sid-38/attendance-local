@@ -14,8 +14,8 @@ with open("private_key",'rb') as pvt_file, open("public_key",'rb') as pub_file:
     private_key = pickle.load(pvt_file)
     public_key = pickle.load(pub_file)
 
-def random_num_generate(n):
-    return random.sample(range(1,random_limit), n)
+def random_num_list_generate(n,min_,max_):
+    return random.sample(range(min_,max_), n)
 
 @app.route('/verify', methods=['POST'])
 def verify():
@@ -41,17 +41,11 @@ def enroll():
     for item in fp:
         item_s=item*item
         esfp.append(public_key.encrypt(item_s))
-        while(1):
-            ran=random.randint(0,25)
-            if (item-ran) > 0:
-                break
+        b_vector=random_num_list_generate(n,1,random_limit)
+        print(b_vector)
         diff_array.append(item-ran)
-        b_vector.append(ran)
-    #template id should be generated... which is unique to each user
     while(1):
         tid=random.randint(100,300)
-        #check if this already exists by going through all mysql entries
-        #if not continue
         public_key.encrypt(tid)
 
     return({'message':'success'},200)
