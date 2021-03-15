@@ -2,8 +2,12 @@ from app import app, db
 from config import *
 from app import public_key,private_key
 from flask import request
+import requests
 import random
 from app.models import User
+import json
+from phe import paillier
+
 
 def random_num_list_generate(n,min_,max_):
     return random.sample(range(min_,max_), n)
@@ -22,9 +26,43 @@ def verify():
     if not 'fp' in data or len(data['fp']) != n:
         return({'message':'error'},400)
     fp = data['fp']
-    efp = []
+    # efp = []
+    # for item in fp:
+    #     efp.append(public_key.encrypt(item))
+    efp_squares=[]
+    y_c=[]
+    c_list=[]
+    ec=[]
     for item in fp:
-        efp.append(public_key.encrypt(item))
+        efp_squares.append(str(public_key.encrypt(item*item).ciphertext()))
+    c_vector=random_num_list_generate(n,1,random_limit)
+    for i in range(0,len(fp)):
+        y_c.append(fp[i] - c_vector[i])
+    enc_c = [str(public_key.encrypt(x).ciphertext()) for x in c_vector]
+    # y_c.append(item-c)
+    # ec.append(public_key.encrypt(c))
+        #send request to cloud
+        #get back the response
+    data = {"enc_y2":efp_squares, "y_c":y_c, "enc_c":enc_c}
+    enc = json.JSONEncoder()
+    data = enc.encode(data)
+    response = requests.post("http://13.233.17.3:3000/api/verify", data)
+    response_json = response.json()
+    for k in response_json:
+        tid = paillier.EncryptedNumber(public_key, int(k))
+        res = paillier.EncryptedNumber(public_key, int(response_json[k]))
+        tid_d= private_key.decrypt(tid)
+        user = User.query.filter_by(tid=tid_d).first()
+        b_vector = json.loads(user.b)
+        extra = 0
+        for i in range(0,len(b_vector)):
+            extra += 2*b_vector[i]*c_vector[i]
+
+        # res = private_key.decrypt(res) - extra
+        print(extra)
+        print(user.id, user.b)
+
+    # print(efp_squares, c_list, y_c, ec)
 
     return({'message':'success'},200)
 
@@ -37,15 +75,30 @@ def enroll():
     esfp = []
     b_vector = []
     diff_array = []
-    for item in fp:
-        item_s=item*item
-        esfp.append(public_key.encrypt(item_s))
-    print(esfp)
+    
+    #Generate ids and store it in database
     b_vector=random_num_list_generate(n,1,random_limit)
     print(b_vector)
-        # diff_array.append(item-ran)
-    # while(1):
-    #     tid=random.randint(100,300)
-    #     public_key.encrypt(tid)
+    user = User(id=data['id'], b=json.dumps(b_vector))
+    db.session.add(user)
+    db.session.commit()
+
+    #Prepare data to be sent to cloud
+    for item in fp:
+        item_s=item*item
+        esfp.append(str(public_key.encrypt(item_s).ciphertext()))
+
+    for i in range(0,len(fp)):
+        diff_array.append(fp[i]-b_vector[i])
+    
+    b_enc = [str(public_key.encrypt(x).ciphertext()) for x in b_vector]
+    tid_enc = str(public_key.encrypt(int(user.tid)).ciphertext())
+    data = {'enc_x2':esfp, 'x_b':diff_array, 'enc_b':b_enc, 'enc_tid':tid_enc}
+    enc = json.JSONEncoder()
+    data = enc.encode(data)
+    # print(data)
+    response = requests.post("http://13.233.17.3:3000/api/enroll", data=data)
+
+    # requests.post('http://13.233.17.3:3000/api/enroll', json={})
 
     return({'message':'success'},200)
