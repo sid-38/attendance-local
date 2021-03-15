@@ -1,11 +1,20 @@
-from app import app
+from app import app, db
 from config import *
 from app import public_key,private_key
 from flask import request
 import random
+from app.models import User
 
 def random_num_list_generate(n,min_,max_):
     return random.sample(range(min_,max_), n)
+
+@app.route('/db_test/<id>/<username>')
+def db_test(id,username):
+    u = User(id=id, username=username)
+    db.session.add(u)
+    db.session.commit()
+    return "Success"
+
 
 @app.route('/verify', methods=['POST'])
 def verify():
