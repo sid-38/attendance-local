@@ -1,10 +1,15 @@
 from flask import Flask, request
+from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate
 from phe import paillier
 import pickle
 import json
 import random
 
 app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql:///root:letmein@127.0.0.1:3307/nitc'
+db = SQLAlchemy(app)
+migrate = Migrate(app, db)
 private_key = None
 public_key = None
 n = 3;
@@ -29,5 +34,4 @@ def verify():
 
     return({'message':'success'},200)
 
-
-
+from app import models
