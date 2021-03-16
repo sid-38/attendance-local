@@ -12,7 +12,7 @@ from phe import paillier
 def random_num_list_generate(n,min_,max_):
     return random.sample(range(min_,max_), n)
 
-@app.route('/verify', methods=['POST'])
+@app.route('/api/verify', methods=['POST'])
 def verify():
     data = request.get_json();
     if not 'fp' in data or len(data['fp']) != n:
@@ -56,7 +56,7 @@ def verify():
 
     return({'message':'success'},200)
 
-@app.route('/enroll',methods=['POST'])
+@app.route('/api/enroll',methods=['POST'])
 def enroll():
     data = request.get_json();
     if not 'id' in data or not 'fp' in data or len(data['fp']) != n:
