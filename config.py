@@ -4,4 +4,4 @@ class Config(object):
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 n = 3;
-random_limit = 10
+random_limit = 20
