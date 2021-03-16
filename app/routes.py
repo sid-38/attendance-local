@@ -3,6 +3,7 @@ from config import *
 from app import public_key,private_key
 from flask import request
 import random
+import json
 from app.models import User
 
 def random_num_list_generate(n,min_,max_):
@@ -14,7 +15,6 @@ def db_test(id,username):
     db.session.add(u)
     db.session.commit()
     return "Success"
-
 
 @app.route('/verify', methods=['POST'])
 def verify():
@@ -30,7 +30,8 @@ def verify():
 
 @app.route('/enroll',methods=['POST'])
 def enroll():
-    data = request.get_json();
+    data = request.get_json()
+    print(type(data))
     if not 'id' in data or not 'fp' in data or len(data['fp']) != n:
         return({'message':'error'},400)
     fp = data['fp']
@@ -43,9 +44,4 @@ def enroll():
     print(esfp)
     b_vector=random_num_list_generate(n,1,random_limit)
     print(b_vector)
-        # diff_array.append(item-ran)
-    # while(1):
-    #     tid=random.randint(100,300)
-    #     public_key.encrypt(tid)
-
     return({'message':'success'},200)
