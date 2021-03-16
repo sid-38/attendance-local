@@ -4,10 +4,10 @@ from app import public_key,private_key
 from flask import request
 import requests
 import random
-from app.models import User
+from app.models import User,Rollcall
 import json
 from phe import paillier
-
+from datetime import datetime,date
 
 def random_num_list_generate(n,min_,max_):
     return random.sample(range(min_,max_), n)
@@ -49,10 +49,17 @@ def verify():
         extra = 0
         for i in range(0,len(b_vector)):
             extra += 2*b_vector[i]*c_vector[i]
-
         res = private_key.decrypt(res) - extra
-        print(res)
-        print(user.id, user.b)
+        if res==0:
+            break
+
+    time_obj = datetime.now()
+    time_obj = time_obj.strftime("%H:%M:%S")
+    date_obj = date.today()
+    date_obj = date_obj.strftime("%d/%m/%y")
+    rollcall = Rollcall(id=user.id, date=date_obj, time=time_obj)
+    db.session.add(rollcall)
+    db.session.commit()
 
     return({'message':'success'},200)
 
@@ -69,7 +76,7 @@ def enroll():
     #Generate ids and store it in database
     b_vector=random_num_list_generate(n,1,random_limit)
     
-    user = User(id=data['id'], b=json.dumps(b_vector))
+    user = User(id=data['id'],b=json.dumps(b_vector))
     db.session.add(user)
     db.session.commit()
 
@@ -80,7 +87,7 @@ def enroll():
 
     for i in range(0,len(fp)):
         diff_array.append(fp[i]-b_vector[i])
-    
+
     b_enc = [str(public_key.encrypt(x).ciphertext()) for x in b_vector]
     tid_enc = str(public_key.encrypt(int(user.tid)).ciphertext())
     data = {'enc_x2':esfp, 'x_b':diff_array, 'enc_b':b_enc, 'enc_tid':tid_enc}
@@ -88,5 +95,4 @@ def enroll():
     enc = json.JSONEncoder()
     data = enc.encode(data)
     response = requests.post("http://13.233.17.3:3000/api/enroll", data=data)
-    print(response.json())
     return({'message':'success'},200)

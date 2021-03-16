@@ -6,4 +6,12 @@ class User(db.Model):
     b = db.Column(db.String(255))
     
     def __repr__(self):
-        return '<User {},{}>'.format(self.id, self.tid)  
+        return '<User {},{}>'.format(self.id, self.tid)
+
+class Rollcall(db.Model):
+    id = db.Column(db.String(10), primary_key = True)
+    date = db.Column(db.String(12), primay_key = True)
+    time = db.Column(db.String(12))
+
+    def __repr__(self):
+        return '<Rollcall {},{}>'.format(self.date, self.time)
