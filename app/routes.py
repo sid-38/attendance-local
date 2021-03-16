@@ -58,11 +58,9 @@ def verify():
         for i in range(0,len(b_vector)):
             extra += 2*b_vector[i]*c_vector[i]
 
-        # res = private_key.decrypt(res) - extra
-        print(extra)
+        res = private_key.decrypt(res) - extra
+        print(res)
         print(user.id, user.b)
-
-    # print(efp_squares, c_list, y_c, ec)
 
     return({'message':'success'},200)
 
