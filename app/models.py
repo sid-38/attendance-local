@@ -10,7 +10,7 @@ class User(db.Model):
 
 class Rollcall(db.Model):
     id = db.Column(db.String(10), primary_key = True)
-    date = db.Column(db.String(12), primay_key = True)
+    date = db.Column(db.String(12), primary_key = True)
     time = db.Column(db.String(12))
 
     def __repr__(self):
