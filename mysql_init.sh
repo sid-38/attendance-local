@@ -3,5 +3,5 @@ DROP DATABASE nitc;
 CREATE DATABASE nitc;
 use nitc;
 CREATE TABLE user(tid int PRIMARY KEY AUTO_INCREMENT, id varchar(10), b varchar(255));
-CREATE TABLE rollcall(slno int PRIMARY KEY AUTO_INCREMENT, id varchar(10), date varchar(12), time varchar(12));
+CREATE TABLE rollcall(id varchar(10), date varchar(12),time varchar(12),PRIMARY KEY(id,date));
 EOF
