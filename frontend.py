@@ -19,7 +19,10 @@ while(1):
         response = requests.post("http://localhost:5000/api/verify",json={"fp":fp_int})
         if response.status_code == requests.codes.ok:
             print("Attendance has been marked!")
+        elif response.status_code == 403:
+            print("Fingerprint not found!")
         else:
+            print(type(response.status_code))
             print("Error!")
     elif choice == "3":
         break

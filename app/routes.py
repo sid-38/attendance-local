@@ -56,21 +56,25 @@ def verify():
         user = User.query.filter_by(tid=tid_d).first()
         b_vector = json.loads(user.b)
         extra = 0
+        found = False
         for i in range(0,len(b_vector)):
             extra += 2*b_vector[i]*c_vector[i]
         res = private_key.decrypt(res) - extra
         if res==0:
+            found = True
             break
+    if found:
+        time_obj = datetime.now()
+        time_obj = time_obj.strftime("%H:%M:%S")
+        date_obj = date.today()
+        date_obj = date_obj.strftime("%d/%m/%y")
+        rollcall = Rollcall(id=user.id, date=date_obj, time=time_obj)
+        db.session.add(rollcall)
+        db.session.commit()
 
-    time_obj = datetime.now()
-    time_obj = time_obj.strftime("%H:%M:%S")
-    date_obj = date.today()
-    date_obj = date_obj.strftime("%d/%m/%y")
-    rollcall = Rollcall(id=user.id, date=date_obj, time=time_obj)
-    db.session.add(rollcall)
-    db.session.commit()
-
-    return({'message':'success'},200)
+        return({'message':'success'},200)
+    
+    return({'message':'failed'}, 403)
 
 @app.route('/api/enroll',methods=['POST'])
 def enroll():
