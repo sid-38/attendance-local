@@ -9,9 +9,16 @@ class User(db.Model):
         return '<User {},{}>'.format(self.id, self.tid)
 
 class Rollcall(db.Model):
-    id = db.Column(db.String(10), primary_key = True)
-    date = db.Column(db.String(12), primay_key = True)
+    __tablename__ = 'rollcall'
+
+    id = db.Column(db.String(10), unique=True)
+    date = db.Column(db.String(12), unique=True)
     time = db.Column(db.String(12))
 
+    __table_args__ = ( 
+            db.PrimaryKeyConstraint(id,date,
+                ),
+            )
+
     def __repr__(self):
-        return '<Rollcall {},{}>'.format(self.date, self.time)
+        return '<Rollcall {},{},{}>'.format(self.date,self.id,self.time)

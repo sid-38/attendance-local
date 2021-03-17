@@ -1,7 +1,7 @@
 from app import app, db
 from config import *
 from app import public_key,private_key
-from flask import request
+from flask import request,render_template
 import requests
 import random
 from app.models import User,Rollcall
@@ -11,6 +11,15 @@ from datetime import datetime,date
 
 def random_num_list_generate(n,min_,max_):
     return random.sample(range(min_,max_), n)
+
+@app.route('/api/attendance/<id_>',methods=['GET'])
+def get_attendance(id_):
+    rollcall = Rollcall.query.filter(Rollcall.id==id_).all()
+    print(len(rollcall))
+    #print(Rollcall.query.filter(Rollcall.id==id_).count())
+    #for x in rollcall:
+    #    print (x.id)
+    return render_template('attendance_list.html',rollcall=rollcall)
 
 @app.route('/api/verify', methods=['POST'])
 def verify():
