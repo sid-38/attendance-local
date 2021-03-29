@@ -35,14 +35,14 @@ def verify():
     e_0 = public_key.encrypt(0)
 
     for item in fp:
-        efp_squares.append(str((e_0 + item*item).ciphertext()))
+        efp_squares.append(str((e_0 + item*item).ciphertext(False)))
         # efp_squares.append(str(public_key.encrypt(item*item).ciphertext()))
 
     for i in range(0,len(fp)):
         y_c.append(fp[i] - c_vector[i])
 
     # enc_c = [str(public_key.encrypt(x).ciphertext()) for x in c_vector]
-    enc_c = [str((e_0 + x).ciphertext()) for x in c_vector]
+    enc_c = [str((e_0 + x).ciphertext(False)) for x in c_vector]
 
     #send request to cloud and get back the response
 
@@ -96,15 +96,19 @@ def enroll():
     db.session.add(user)
     db.session.commit()
 
+    e_0 = public_key.encrypt(0)
+   
     #Prepare data to be sent to cloud
     for item in fp:
         item_s=item*item
-        esfp.append(str(public_key.encrypt(item_s).ciphertext()))
+        # esfp.append(str(public_key.encrypt(item_s).ciphertext()))
+        esfp.append(str((e_0 + item_s).ciphertext(False)))
 
     for i in range(0,len(fp)):
         diff_array.append(fp[i]-b_vector[i])
 
-    b_enc = [str(public_key.encrypt(x).ciphertext()) for x in b_vector]
+    # b_enc = [str(public_key.encrypt(x).ciphertext()) for x in b_vector]
+    b_enc = [str((e_0+x).ciphertext(False)) for x in b_vector]
     tid_enc = str(public_key.encrypt(int(user.tid)).ciphertext())
     data = {'enc_x2':esfp, 'x_b':diff_array, 'enc_b':b_enc, 'enc_tid':tid_enc}
 
