@@ -5,3 +5,4 @@ class Config(object):
 
 n = 10;
 random_limit = 100
+threshold = 1000

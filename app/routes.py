@@ -63,7 +63,7 @@ def verify():
         for i in range(0,len(b_vector)):
             extra += 2*b_vector[i]*c_vector[i]
         res = private_key.decrypt(res) - extra
-        if res==0:
+        if res<threshold:
             found = True
             break
     if found:
