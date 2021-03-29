@@ -32,15 +32,18 @@ def verify():
     ec=[]
 
     c_vector=random_num_list_generate(n,1,random_limit)
+    e_0 = public_key.encrypt(0)
 
     for item in fp:
-        efp_squares.append(str(public_key.encrypt(item*item).ciphertext()))
+        efp_squares.append(str((e_0 + item*item).ciphertext()))
+        # efp_squares.append(str(public_key.encrypt(item*item).ciphertext()))
 
     for i in range(0,len(fp)):
         y_c.append(fp[i] - c_vector[i])
 
-    enc_c = [str(public_key.encrypt(x).ciphertext()) for x in c_vector]
-    
+    # enc_c = [str(public_key.encrypt(x).ciphertext()) for x in c_vector]
+    enc_c = [str((e_0 + x).ciphertext()) for x in c_vector]
+
     #send request to cloud and get back the response
 
     data = {"enc_y2":efp_squares, "y_c":y_c, "enc_c":enc_c}
