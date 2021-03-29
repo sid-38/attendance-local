@@ -1,10 +1,11 @@
 import requests
+from config import *
 while(1):
     choice = input("Menu\n1. Enroll\n2. Mark attendance\n3. Exit\n Enter your choice: ")
     if choice == "1":
         #Enrollment
         _id = input("Please enter id: ")
-        fp = input("Enter 3 elements of fp seperated by space: ").split()[:3]
+        fp = input("Enter {} elements of fp seperated by space: ".format(n)).split()[:n]
         fp_int = [int(x) for x in fp]
         # print(fp_int)
         response = requests.post("http://localhost:5000/api/enroll",json={"id":_id, "fp":fp_int})
@@ -14,7 +15,7 @@ while(1):
             print("Error!")
     elif choice == "2":
         #Marking attendance
-        fp = input("Enter 3 elements of fp seperated by space: ").split()[:3]
+        fp = input("Enter {} elements of fp seperated by space: ".format(n)).split()[:n]
         fp_int = [int(x) for x in fp]
         response = requests.post("http://localhost:5000/api/verify",json={"fp":fp_int})
         if response.status_code == requests.codes.ok:
