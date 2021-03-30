@@ -79,10 +79,8 @@ def verify():
     
     users = User.query.all()
     user_b = {user.tid: (user.b,user.id) for user in users}
-    print(user_b)
     for tid in return_dict:
         # user=User.query.filter_by(tid=tid).first()
-        print(tid,type(tid))
         b_vector = json.loads(user_b[str(tid)][0])
         uid = user_b[str(tid)][1]
         extra = 0
@@ -118,18 +116,21 @@ def verify():
         db.session.add(rollcall)
         db.session.commit()
         t5=time.time()
-        print("Total:",t5-t0)
-        print("Encryption:",t1-t0)
-        print("Cloud RTT:",t2-t1)
-        print("Decryption(M):",t3-t2)
-        print("Decryption:",t4-t3)
-        print("Cryptdb:",t5-t4)
+        if(showTiming):
+            print("====================================")
+            print("Total:",t5-t0)
+            print("Encryption:",t1-t0)
+            print("Cloud RTT:",t2-t1)
+            print("Decryption:",t4-t2)
+            print("Cryptdb:",t5-t4)
+            print("====================================")
         return({'message':'success'},200)
     
     return({'message':'failed'}, 403)
 
 @app.route('/api/enroll',methods=['POST'])
 def enroll():
+    t0=time.time()
     data = request.get_json();
     if not 'id' in data or not 'fp' in data or len(data['fp']) != n:
         return({'message':'error'},400)
@@ -164,5 +165,9 @@ def enroll():
     enc = json.JSONEncoder()
     data = enc.encode(data)
     response = requests.post("http://13.233.17.3:3000/api/enroll", data=data)
-    
+    t1=time.time()
+    if(showTiming):
+        print("====================================")
+        print("Total:",t1-t0)
+        print("====================================")
     return({'message':'success'},200)
