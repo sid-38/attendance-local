@@ -71,16 +71,20 @@ def verify():
         p=Process(target=worker,args=(k,response_json[k],public_key,private_key,return_dict))
         jobs.append(p)
         p.start()
-        
+
     for job in jobs:
         job.join()
         
     t3=time.time()
     
-    
+    users = User.query.all()
+    user_b = {user.tid: (user.b,user.id) for user in users}
+    print(user_b)
     for tid in return_dict:
-        user=User.query.filter_by(tid=tid).first()
-        b_vector = json.loads(user.b)
+        # user=User.query.filter_by(tid=tid).first()
+        print(tid,type(tid))
+        b_vector = json.loads(user_b[str(tid)][0])
+        uid = user_b[str(tid)][1]
         extra = 0
         found = False
         for i in range(0,len(b_vector)):
@@ -110,7 +114,7 @@ def verify():
         time_obj = time_obj.strftime("%H:%M:%S")
         date_obj = date.today()
         date_obj = date_obj.strftime("%d/%m/%y")
-        rollcall = Rollcall(id=user.id, date=date_obj, time=time_obj)
+        rollcall = Rollcall(id=uid, date=date_obj, time=time_obj)
         db.session.add(rollcall)
         db.session.commit()
         t5=time.time()
@@ -160,4 +164,5 @@ def enroll():
     enc = json.JSONEncoder()
     data = enc.encode(data)
     response = requests.post("http://13.233.17.3:3000/api/enroll", data=data)
+    
     return({'message':'success'},200)
